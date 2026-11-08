@@ -1,0 +1,23 @@
+{
+  "name": "FPGA4232",
+  "design_type": "D",
+  "technology": "IHP",
+  "unique_id": "4232",
+  "license": "Apache-2.0",
+  "trl": 3,
+  "sealring_x": 3000.0,
+  "sealring_y": 3000.0,
+  "repository": "https://github.com/HeiChips/heichips26-submission.git",
+  "pdk_version": "408802277be939b8991c799880a2f6cdd6e51826",
+  "process": "SG13CMOS",
+  "dependencies": {},
+  "tools": {},
+  "top_cell_name": "FPGA4232",
+  "gds_path": "release/v.1.0.0/gds/FPGA4232.gds.gz",
+  "release": {
+    "version": "v.1.0.0",
+    "gds": "release/v.1.0.0/gds",
+    "netlist": "release/v.1.0.0/netlist",
+    "doc": "release/v.1.0.0/doc"
+  }
+}
