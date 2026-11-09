@@ -1,3 +1,983 @@
 # HeiChips 2026 Tapeout
 
+![heichips26.jpg](img/heichips26.jpg)
 
+This repository contains the chip for the [HeiChips Summer School 2026](https://heichips.github.io/), targeting [SG13CMOS5L](https://dk.ihp-microelectronics.com/OpenSourceRequest.php) from IHP. It includes several designs created during the Hackathon, all of which are connected to a central eFPGA fabric.
+Thanks to [FABulous](https://github.com/FPGA-Research/FABulous), the user bitstream for the FPGA can be generated using the [Yosys](https://github.com/YosysHQ/yosys) and [nextpnr](https://github.com/YosysHQ/nextpnr) toolchain.
+
+The chip has been designed using open-source EDA tools and the [IHP Open Source PDK](https://github.com/IHP-GmbH/IHP-Open-PDK).
+
+<p align="center">
+  <a href="img/heichips26_top.png">
+    <img src="img/heichips26_top_small.png" alt="chip layout" width=55%>
+  </a>
+</p>
+
+## Feature Overview
+
+The chip includes numerous user-submitted designs from the HeiChips 2026 Hackathon. An eFPGA is located in the center of the chip and allows user projects to connect to each other, utilize the SRAM, or access external I/Os.
+
+- FABulous eFPGA
+  - 32x `IOBUF`
+  - 288x `FABULOUS_LC`
+    - LUT4 + FF, w/ carry chain
+  - 1x `IHP_SRAM_1024x32_1RW`
+    - 4 KiB memory, single port
+    - individual bit-enable
+  - 4x `GBUF`
+    - global buffer
+    - clock, reset or enable
+  - 1x `SYS_RESET`
+    - reset design after configuration
+
+The following user projects are included:
+
+<p align="center">
+  <a href="img/heichips26_projects.png">
+    <img src="img/heichips26_projects.png" alt="heichips projects" width=90%>
+  </a>
+</p>
+
+<!--- project_table_start -->
+
+| Project       | Size          | Location      | Description  | Link |
+|---------------|---------------|---------------|--------------|------|
+| Event-Driven Motion SNN | large | X0Y2 | A packetized event-camera filter and time-multiplexed 16-neuron SNN for low-power motion classification. | [Repo](https://github.com/HeiChips/heichips26-aiaccel) |
+| FABulous Analogue Interface | small | X5Y7 | Analogue mixed-signal peripherals | [Repo](https://github.com/HeiChips/heichips26-FAIfplus) |
+| E2Spike | large | X0Y7 | This project develops a compact edge AI accelerator for end-to-end spiking neural network inference and on-chip learning, supporting operators such as depthwise convolution, pointwise convolution, and fully connected layers. It also explores SDSP-based lifelong learning and always-on applications such as seizure detection and fall detection. | [Repo](https://github.com/HeiChips/heichips26-e2spike) |
+| Multimode DLL | small | X5Y4 | Standard-cell clock generator with a tunable ring oscillator, automatic frequency control, phase-selectable divided outputs, a glitch-free clock mux, and a CrocoScale Wishbone CDC bridge. | [Repo](https://github.com/HeiChips/heichips26-multimode_dll) |
+| SRAM Cell Test | tiny | X5Y9/1 | A test of using sram cells directly as configuration memory. | [Repo](https://github.com/HeiChips/heichips26-sramcell-test) |
+| Intel 1103 Replica | tiny | X5Y1/0 | This project attempts to recreate the first ever commercially available DRAM memory, the Intel 1103. | [Repo](https://github.com/HeiChips/heichips26_dram_replica) |
+| RiMaX | large | X0Y9 | This project uses a simple riscv core and is equipted with an approximate floating point multiplier | [Repo](https://github.com/HeiChips/heichips26-rimax) |
+| HeiScore | tiny | X5Y9/0 | A noRTL written implementation of Pong. | [Repo](https://github.com/HeiChips/heichips26-heiscore) |
+| Minimal Multicore Processor | tiny | X5Y1/1 | A custom 3-instruction dual-core 8-Bit CPU with a memory management unit supporting atomic swap operations. | [Repo](https://github.com/HeiChips/heichips26-minimal-processor) |
+| Noiser | small | X0Y5 | ring-oscillator designs for generating power side-channel noise | [Repo](https://github.com/HeiChips/heichips26_noise_gen) |
+| DNA Sequence Aligner | small | X0Y4 | This is a DNA sequence alignment accelerator based on Smith-Waterman algorithm. | [Repo](https://github.com/HeiChips/heichips26-DNA_sequencer) |
+| An On-Off keying Transmitter/Receiver | small | X5Y2 | ON OFF keying Transmitter+Receiver. Very cool. | [Repo](https://github.com/HeiChips/heichips26-on-off) |
+| Voltage Controlled Resistor | small | X5Y3 | A fully analog component with ohmic behaviour whose resistance value can be changed in accordance with an external analog control voltage. | [Repo](https://github.com/HeiChips/heichips26-voltage-controlled-resistor) |
+| daftASIC | small | X5Y8 | An extensively, named daftASIC, designed and expandable music synthesizer built purely in silicon, supporting both visual and audio outputs | [Repo](https://github.com/HeiChips/heichips26-daftasic) |
+| Ballmer-Peak-Detector | small | X0Y3 | Edge State Space Model Processing Element using Posit Arithmetic | [Repo](https://github.com/HeiChips/heichips26-ballmer-peak-detector) |
+
+<!--- project_table_end -->
+
+For a full description of the projects, see [User Projects](#user-projects).
+
+## User Projects
+
+<!--- project_list_start -->
+
+### Event-Driven Motion SNN
+
+A packetized event-camera filter and time-multiplexed 16-neuron SNN for low-power motion classification.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_event_snn.png">
+    <img src="img/user_projects/heichips26_event_snn.png" alt="Render of heichips26_event_snn" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_event_snn`
+Slot size: `large`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Gabriela Mystkowska
+- Edvinas Patiejunas
+- Jerry Yun
+- Marco Vogel
+
+**Description:**
+
+Event-Driven Motion SNN accepts 32x32 event-camera coordinates, polarity,
+and timestamps through a pin-compliant 16-bit packet interface. A 32-entry
+direct-indexed spatiotemporal filter rejects cold, stale, and refractory
+events. Accepted events are encoded into eight motion directions and sent to
+sixteen programmable leaky-integrate-and-fire neurons. Four neurons vote for
+each of four motion classes: east, west, south, and north.
+
+Area is reduced by sharing one signed neuron-update datapath across all
+sixteen neurons, using signed 4-bit weights, storing only 12 timestamp bits,
+serially initializing the 128 weights, and avoiding redundant result
+snapshots. The 16-bit command/response protocol supports event input,
+parameter and weight programming, per-event spike reporting, frame-level
+classification, counters, backpressure, busy status, and interrupt signaling.
+
+The macro uses the official 500 um x 415 um large-slot DEF, the standard
+HeiChips large digital interface, no analog pins, and the ihp-sg13cmos5l
+process. It can be tested with the included deterministic unit, wrapper, and
+backpressure-aware protocol tests.
+
+
+### FABulous Analogue Interface
+
+Analogue mixed-signal peripherals
+
+<p align="center">
+  <a href="img/user_projects/heichips26_FAIf.png">
+    <img src="img/user_projects/heichips26_FAIf.png" alt="Render of heichips26_FAIf" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_FAIf`
+Slot size: `small`
+Analog pins: `3`
+Uses VAPRW: `True`
+
+**Team members:**
+
+- Benedikt Lukat
+- Pascal Gesell
+- Torsten Maehne
+- Graeme Bragg
+
+**Description:**
+
+HeiChips 2026 FABulous Analogue Interface (FAIf)
+
+Analogue peripherals for the eFPGA: two 8-bit DACs and an 8-bit SAR ADC,
+controlled through the standard digital interface. All analogue blocks
+(R-2R ladders, opamps, comparator, sample & hold, PTAT bias, level
+translators) are full-custom in a hard macro supplied by the 3.3 V analogue
+supply VAPWR; the control logic is synthesised in the 1.2 V core domain.
+
+**Analogue pins**
+
+| Pin | Function |
+| --- | -------- |
+| analog_0 | DAC2 output (buffered) |
+| analog_1 | DAC1 output (buffered) |
+| analog_2 | ADC input |
+
+**Digital interface** (all inputs sampled on the rising edge of `clk`)
+
+| Pin | Function |
+| --- | -------- |
+| `ui_in[7:0]` | DAC data / configuration data |
+| `uio_in[0]` | ADC clear |
+| `uio_in[1]` | ADC enable |
+| `uio_in[2]` | ADC start |
+| `uio_in[5]` | DAC select (0 = DAC1 byte, 1 = DAC2 byte and update) |
+| `uio_in[6]` | DAC load |
+| `uio_in[7]` | load configuration |
+| `uo_out[7:0]` | ADC result |
+| `uio_out[3]` | ADC done |
+| `uio_out[4]` | ADC tick (result valid, one clock) |
+
+**How to use it**
+
+- DACs: set `ui_in` to the DAC1 value and pulse DAC load with DAC select = 0;
+  then set `ui_in` to the DAC2 value and pulse DAC load with DAC select = 1.
+  Both outputs update together on the second load.
+- ADC: set ADC enable = 1. While the ADC is idle, the sample & hold tracks
+  analog_2. Pulse ADC start for one clock: the S&H holds, the SAR decides one
+  bit per clock (MSB first), and 9 clocks after start ADC tick marks the new
+  result on `uo_out`, which stays until the next result. ADC clear stops a
+  conversion and clears the result.
+- Configuration: pulse load configuration with the value on `ui_in`.
+  `cfg[3:0]` drives four spare 3.3 V outputs inside the macro (reserved for
+  a later trim); `cfg[7:4]` is unused.
+
+**Timing**: each SAR bit uses the comparator one clock period after the DAC
+changed, so the clock must be slow enough for DAC and comparator to settle.
+The S&H needs about 2 µs of idle (tracking) time between conversions; the
+input buffer limits a full-scale step to 7–12 µs and a full-scale sine to
+about 26 kHz.
+
+**Test and PCB needs**
+
+- VAPWR 3.3 V (analogue supply) must be present.
+- analog_2: a low-impedance source within the ADC input range, e.g. a
+  function generator or a DAC output looped back externally.
+- analog_0/analog_1: a test point or SMA connector per output for a scope or
+  multimeter; the outputs are buffered on chip but not meant to drive heavy
+  loads.
+- The clock is provided by the RP2350 and can be slowed down for the ADC.
+- opt., Self-test: loop a DAC output back to analog_2 on the PCB
+  (DAC1 on analog_1 is the neighbouring pin) and compare the
+  ADC result with the DAC code.
+
+Repository: https://github.com/ThePil0t/heichips26-FAIfplus
+
+
+### E2Spike
+
+This project develops a compact edge AI accelerator for end-to-end spiking neural network inference and on-chip learning, supporting operators such as depthwise convolution, pointwise convolution, and fully connected layers. It also explores SDSP-based lifelong learning and always-on applications such as seizure detection and fall detection.
+
+
+<p align="center">
+  <a href="img/user_projects/heichips26_e2spike.png">
+    <img src="img/user_projects/heichips26_e2spike.png" alt="Render of heichips26_e2spike" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_e2spike`
+Slot size: `large`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Yuehai Chen
+- Frank de Weers
+- Shuzhong Wang
+- Yike Jing
+- Sebastian Kallfelz
+
+**Description:**
+
+E2Spike was awarded the HeiChips Best Project (Digital) this year. It is a compact
+neuromorphic accelerator supporting end-to-end Spiking Neural Network (SNN) inference
+and SDSP-based on-chip learning. The current implementation can execute a 12-layer
+lightweight SNN for edge applications.
+
+Key features include:
+
+* End-to-end execution of SNN models;
+* Support for five operators: depthwise convolution, pointwise convolution,
+  max pooling, average pooling, and fully connected operations;
+* Validation on EEG-based seizure detection and DVS-based fall detection.
+
+The project is open source and available on
+[GitHub](https://github.com/xiaoyuehai/heichips26-e2spike).
+
+
+### Multimode DLL
+
+Standard-cell clock generator with a tunable ring oscillator, automatic frequency control, phase-selectable divided outputs, a glitch-free clock mux, and a CrocoScale Wishbone CDC bridge.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_multimode_dll.png">
+    <img src="img/user_projects/heichips26_multimode_dll.png" alt="Render of heichips26_multimode_dll" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_multimode_dll`
+Slot size: `small`
+Analog pins: `3`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Kevin Klein
+- Nils Kissner
+
+**Description:**
+
+The multimode DLL explores configurable clock generation using only standard
+cells in the IHP SG13CMOS5L process. It contains no tri-state cells. A 13-stage
+ring oscillator supports manual digitally controlled oscillator (DCO) tuning
+and automatic frequency-locked loop (FLL) control. In FLL mode, a reference
+divider and multiplier set the target frequency within the oscillator's tuning
+range; frequency lock does not imply phase lock to the external reference.
+
+Three output channels provide ring-tap phase selection, independent division,
+polarity selection and optional XOR mixing. A 71-bit serial configuration
+frame is shifted MSB first using clk, shift enable ui_in[0] and data ui_in[1].
+Hold DLL enable ui_in[4] low while loading; raise it after the complete frame.
+Reset rst_n low to clear the configuration and load a new frame.
+
+analog_0 carries DLL clk0 and analog_1 carries DLL clk1. A standard-cell
+glitch-free clock mux selects clk0 or clk2 using ui_in[5] and drives analog_2.
+Both source clocks must remain running during handover. Hold the select value
+for at least four periods of the slower clock between changes. The six
+signals are continuously available to the eFPGA: uo_out[0], uo_out[1] and
+uo_out[2] carry DLL clk0, clk1 and clk2 respectively. uo_out[3] carries the
+buffered reference, uo_out[4] carries stable, and uo_out[5] carries the
+clock-mux output. uo_out[7:6], uio_out[7] and uio_oe are tied low.
+
+CrocoScale BusKit uses its default 2-bit address, 4-bit data, eight-entry FIFO
+and enabled 256-cycle watchdog settings. Its fabric clock and active-high
+reset use ui_in[2] and ui_in[3]; Wishbone cycle and strobe use ui_in[6] and
+ui_in[7]. uio_in[0] is write enable, uio_in[2:1] is address, uio_in[6:3] is
+write data, and uio_in[7] is the active-high BusKit DLL-domain reset. Stall,
+acknowledge and error appear on uio_out[0], uio_out[1] and uio_out[2], with
+read data on uio_out[6:3]. DLL clk1 clocks the BusKit slave domain. Hold both
+BusKit resets asserted during DLL configuration/startup and disable clk1 XOR
+mixing when using this clock. Timing targets are 100 MHz fabric and 250 MHz
+DLL slave clock. BusKit logic is placed as standard cells beside the DLL.
+
+Testing requires an external reference/configuration clock, GPIO control and
+an oscilloscope or frequency counter for the clock outputs. Allow oscillator
+startup and controller acquisition before measuring frequency. The project
+includes RTL integration tests, DLL gate-level tests with SDF back-annotation,
+oscillator transistor-level SPICE characterization, and clock-mux Icarus and
+SPICE handover tests. Simulation scope and results are documented in the macro
+READMEs. The hardware uses VPWR and VGND, with no separate VAPWR domain.
+
+Build the DLL and wrapper from the repository root with make build-top after
+loading the EDA tools and sourcing env.sh. See
+macros/heichips26_multimode_dll/README.md for the full interface, configuration
+encoding, operating limits and reproducible simulation commands.
+
+
+### SRAM Cell Test
+
+A test of using sram cells directly as configuration memory.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_sramcell_test.png">
+    <img src="img/user_projects/heichips26_sramcell_test.png" alt="Render of heichips26_sramcell_test" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_sramcell_test`
+Slot size: `tiny`
+Analog pins: `3`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Leo Moser
+
+**Description:**
+
+This project uses a single column of a 6T SRAM bitcell array directly connected to the project outputs, to be evaluated as configuration memory for an FPGA.
+
+The SRAM bitcell array is generated using [c4m-arrakeen-memgen](https://gitlab.com/Chips4Makers/c4m-arrakeen-memgen/-/tree/lut), more specifically, using the [lut branch](https://gitlab.com/Chips4Makers/c4m-arrakeen-memgen/-/tree/lut) and running `uv run gen_16x1.py`.
+
+Two macros are implemented using LibreLane in order to select the row to write to (`wl`) and to write the bit data (`bl`/`bl_n`). Two `sg13cmos5l_ebufn_8` are used to write to `bl` and `bl_n`.
+
+The array holds 16 bits and can be accessed as follows:
+
+- `io_in[0]` - we_i (enable the write buffers)
+- `ui_in[1]` - in_i (the bit to write)
+- `ui_in[5:2]` - addr_i (address of the bitcell array)
+- `uo_out[7:0]` - `bit[8:15]`
+- `uio_out[7:0]` - `bit[0:7]`
+
+Additionally, `bit[13:15]` are connected to `analog_[2:0]` in reverse order.
+
+
+### Intel 1103 Replica
+
+This project attempts to recreate the first ever commercially available DRAM memory, the Intel 1103.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_dram_replica.png">
+    <img src="img/user_projects/heichips26_dram_replica.png" alt="Render of heichips26_dram_replica" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_dram_replica`
+Slot size: `tiny`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Lukas Jahn
+- Jonathan Hager
+- Barnabás Hidvégi
+- Abdelaziz Ider
+- Jennifer Muck
+
+**Description:**
+
+Featuring an 1024 bit storage array, the Intel 1103 DRAM, introduced in 1970, becaume the first widely used, commercially available semiconductor memory device.
+This project attempts to recreate one of the fundamental building blocks of that memory device, a single storage cell, capable of holding one bit.
+The implementation abuses parasitic capacitance of one nmos-transistor to hold the bit, consequently requiring refreshes.
+The precise control timings will be determined after tapeout, though simulation suggest a periodic refresh time of 100us.
+
+The cell can be controlled via five exposed pins:
+* ui_in[3]:  PreCh (precharge):     set high before read
+* ui_in[2]:  RWL (read word line):  set high to read from the cell
+* ui_in[1]:  WWL (write word line): set high to write to the cell
+* ui_in[0]:  WBL (write bit line):  set the wanted bit to be stored
+* uo_out[0]: RBL (read bit line):   outputs the stored bit
+
+
+### RiMaX
+
+This project uses a simple riscv core and is equipted with an approximate floating point multiplier
+
+<p align="center">
+  <a href="img/user_projects/heichips26_RiMaX.png">
+    <img src="img/user_projects/heichips26_RiMaX.png" alt="Render of heichips26_RiMaX" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_RiMaX`
+Slot size: `large`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Pouria Hasani
+- Nima Amirafshar
+- Soheil Khoyooz
+- Susindhar Manivasagann
+
+**Description:**
+
+This project is about the suitablility of approximation in the arithmatic units for different applications.
+The CPU core is picorv32 supporting rv32i ISA. As a co-processor there is an approximate floating point multiplier
+which has its own costum instructions. The approximate multiplier is 20 times smaller than the exact counter part
+which makes it highly suitable to reduce the area and therefore the cost of the chip. The Error of the multipler has 
+MRED of less 10^-3. 
+The top module will use the FPGA to forward the mermory access to the off chip and retrive the data. 
+The module for the fpga and the connecting module the whole chip have been designed and tested. 
+
+
+### HeiScore
+
+A noRTL written implementation of Pong.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_heiscore.png">
+    <img src="img/user_projects/heichips26_heiscore.png" alt="Render of heichips26_heiscore" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_heiscore`
+Slot size: `tiny`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Georg Gläser
+- Nils Stanislawski
+
+**Description:**
+
+HeiScore is a complete two-player Pong machine in the 200 x 200 um tiny slot:
+no CPU, no framebuffer, no external memory. Running from a 25 MHz clock, it
+generates a 640 x 480 @ 60 Hz VGA signal pixel by pixel. The screen shows a
+bouncing ball with a colour bitmap, two paddles, a playfield frame and two
+7-segment scores. The first player to reach 10 points wins, and the match
+restarts.
+
+The design contains no hand-written RTL. It is described in Python with nortl
+and emitted as SystemVerilog; only the top-level pin wrapper is written by
+hand. The scene is a combinational function of the pixel position, and the
+same function drives collision detection. The game state needs only about
+110 flip-flops.
+
+Paddles are controlled via ui_in[3:0] (P1/P2 up/down). The VGA output is
+1 bit per colour on uo_out in TinyVGA Pmod pin order, and the uio pins are
+unused. The design has also been demonstrated on an FPGA (Olimex GateMate)
+with a key matrix and an ILI9341 LCD.
+
+
+### Minimal Multicore Processor
+
+A custom 3-instruction dual-core 8-Bit CPU with a memory management unit supporting atomic swap operations.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_minimal_multicore_processor.png">
+    <img src="img/user_projects/heichips26_minimal_multicore_processor.png" alt="Render of heichips26_minimal_multicore_processor" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_minimal_multicore_processor`
+Slot size: `tiny`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Jakob Rinke
+- Benjamin Steeg
+- Daniel Bayer
+- Ekrem Altuntop
+- Simon Mönch
+
+**Description:**
+
+Two custom CPU cores and a custom memory management unit (MMU) in just 200µm x 200µm with a maximum clock frequency of 303MHz. 
+Almost entirely engineered in just two days at the HeiChips 2026 Summer School.
+
+##### Top Level Architecture
+The two cores use the MMU for all memory interactions, including fetching of instructions. 
+The MMU ensures that instructions and data are transferred to the correct core and implements a custom communication protocol 
+with the eFPGA. The eFPGA allows the CPUs to interface with the on-chip SRAM or (in the future) with other projects.
+
+##### ISA
+| Instruction     | Description                                          |
+|-----------------|------------------------------------------------------|
+| JMPZ R #imm     | Jump to PC + #imm if, and only if, R = 0             |
+| ADDI Ra Rb #imm | Rb = Ra + #imm                                       |
+| SWAP Ra Rb      | Swap Ra with value at address saved in Rb (atomic)   |
+
+##### CPU Architecture
+The Memory Communicator module interfaces with the MMU and thus is partly responsible for memory access.
+
+##### MMU
+The MMU takes load and swap requests from the CPUs and performs the necessary communication with the eFPGA through a custom 
+communication protocol. Additionally, the MMU arbits memory access in case of parallel request from the CPUs.
+
+The interface of the MMU is as follows:
+| Port           | Description                                                | Dimension (C = #CPUs)  |
+|----------------|------------------------------------------------------------|------------------------|
+| clk_i          | clock                                                      | 1                      |
+| rst_ni         | reset (active low)                                         | 1                      |
+| reg_data       | data input from CPUs                                       | Cx8                    |
+| ram_addr       | address input from CPUs                                    | Cx8                    |
+| valid          | signals from CPUs to request memory operation              | C                      |
+| do_swap        | set if and only if CPUs want to perform a swap             | C                      |
+| mem_done       | signals to the CPUs that the memory operation was completed| C                      |
+| data_out_cpu   | data output to CPUs                                        | 16                     |
+| fpga_in1       | lower significance bits input from eFPGA                   | 8                      |
+| fpga_in2       | higher significance bits input from eFPGA                  | 8                      |
+| fpga_out       | output to eFPGA                                            | 8                      |
+
+Communication between a CPU and the MMU takes place as follows:
+1. Setting valid requests a memory transfer. ram_addr, and ram_data if a swap operation is requested, must be set to the 
+desired values when valid is set. If a swap is requested, do_swap must also be set when valid is set. valid must be kept 
+set until the transfer finishes. ram_addr, ram_data and do_swap must not be changed until the transfer finishes.
+2. mem_done signals to the CPU that the transfer has finished and that the data at data_out_cpu is valid. This state is only
+kept for one cycle.
+3. The CPU acknowledges the finished transfer to the MMU by resetting valid.
+
+Communication between the MMU and the eFPGA takes place as follows:
+1. The MMU sends 8'b0000_00x1 over fpga_out to the eFPGA. x is set when a swap is requested and reset when a load is requested.
+2. The MMU send the desired address over fpga_out.
+3. The MMU waits for the finish of the read operation by waiting until the two LSBs of fpga_in are not 2'b11 (Note that this 
+implies that the eFPGA must always set the two LSBs of fpga_in1 to 2'b11.). Because these two bits are at the position of the 
+opcode, and 2'b11 is not a valid opcode, they can be used to signal a valid instruction. If a swap is performed, only fpga_in2 
+is used for the data.
+4. If no swap was requested, go to 6. If a swap was requested, the MMU sends the to be written data over fpga_out. Note that 
+since a swap operation is performed, the address from the read operation is also valid for the write operation.
+5. The eFPGA signals the finish of the write operation by setting fpga_in1 different from 2'b11.
+6. The MMU waits for the receiving CPU to acknowledge before starting the next interaction.
+
+
+### Noiser
+
+ring-oscillator designs for generating power side-channel noise
+
+<p align="center">
+  <a href="img/user_projects/heichips26_noise_gen.png">
+    <img src="img/user_projects/heichips26_noise_gen.png" alt="Render of heichips26_noise_gen" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_noise_gen`
+Slot size: `small`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Dina Hesse
+- Meinhard Kissich
+- Mehmet Uluisik
+
+**Description:**
+
+Our design realizes different noisers that are built for generating power side-channel noise to hide secret signals of computations on the eFPGA. The engine includes several ring-oscillator-designs and different loads that can be driven by these ring-oscillators. After tape-out we want to measure the power consumption of the chip (would be nice if there would be ports directly on the PCB for this) and evaluate the effectiveness of different configurations.
+
+
+### DNA Sequence Aligner
+
+This is a DNA sequence alignment accelerator based on Smith-Waterman algorithm.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_dna_sequencer.png">
+    <img src="img/user_projects/heichips26_dna_sequencer.png" alt="Render of heichips26_dna_sequencer" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_dna_sequencer`
+Slot size: `small`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Tharindu Samarakoon
+- Shangeeth Gopinathan Rajeshkumar
+- Udaya Subedi
+- Udara Mendis
+
+**Description:**
+
+
+#### DNA Sequence Alignment Accelerator
+
+This project implements a hardware-accelerated DNA sequence alignment
+engine based on the Smith-Waterman dynamic programming algorithm.
+
+##### Architecture
+
+- **DNA alignment accelerator**
+  - Implemented as a systolic array based ASIC targeting the IHP SG13CMOS5L process
+  - Performs the Smith-Waterman algorithm purely in hardware
+  - Synthesized with a target operating frequency of 100MHz. 
+  - Computes the dynamic programming matrix in parallel using a systolic array
+  - Supports 8-character long DNA sequences.
+  - Fully pipelined and capable of receiving a new test sequence while previous sequence is still being processed.
+
+- **RISC-V (task specialized) processor**
+  - Implemented in eFPGA
+  - This is capable of running at 15MHz on the eFPGA.
+  - Drives the accelerator
+  - Feeds sequences from on-chip memory to the accelerator
+  - Stores the alignment results back into memory
+
+##### How It Works
+
+1. The RISC-V processor (in eFPGA) loads the encoded DNA sequences from memory.
+2. A specified number of sequences are written to the accelerator's FIFO through its MMIO interface.
+3. The systolic array inside the accelerator performs the alignment computation.
+4. The processor polls the accelerator status until the results are ready.
+5. The alignment score is saved and read from the accelerator's FIFOs.
+6. The result is stored back into on-chip memory.
+
+##### Testing
+
+* **SystemVerilog testbench**: macros/heichips26_dna_sequencer/testbenches/verilog/heichips26_dna_sequencer_tb.sv
+* **Cocotb testbench**: macros/heichips26_dna_sequencer/testbenches/cocotb/heichips26_dna_sequencer_tb.py
+
+##### Hardware Requirements
+
+- We would like to have
+  - A UART interface in the eFPGA which can connect with an external device such as a laptop or RPi (to bypass the RISC-V processor inside the eFPGA if required).
+  - A push button to reset.
+  - Capability to access the on-chip SRAM from an external device.
+
+
+### An On-Off keying Transmitter/Receiver
+
+ON OFF keying Transmitter+Receiver. Very cool.
+
+
+<p align="center">
+  <a href="img/user_projects/heichips26_ook_top.png">
+    <img src="img/user_projects/heichips26_ook_top.png" alt="Render of heichips26_ook_top" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_ook_top`
+Slot size: `small`
+Analog pins: `3`
+Uses VAPRW: `True`
+
+**Team members:**
+
+- Belal Elshinnawey
+- Koh Tomita
+- Kokoro Kodama
+- Francisco Sayas
+
+**Description:**
+
+- Receiver design:
+  - A 3 stage input amplifier
+  - the amplifier connects to a PMOS, connected as a diode
+  - the diode uses an off chip capacitor and resistor to form a peak detector
+  - the peak detector feeds 4 comparators, each comparator has a threshold that ramps above 900mV based on signal strength
+- Transmitter design:
+  - The design uses a VCO to lock on 433.92 MHz
+  - The VCO feeds an output buffer, which has a transmission gate to turn the output on/off (the OOK part)
+  - The buffer also contains a middle tap before the transmission gate to feed the VCO output back
+  - The feedback clock is divided using a line of 13 flip-flops. The divided signal is fed to an FSM
+  - The FSM computes the frequency error and increases/decreases the duty of a DAC based on the error
+  - The DAC connects to a low pass filter which feeds the VCO to set the frequency
+- Digital side:
+  - The digital side contains a simple 2xFF stage per comparator output to sync the comparators with local clock domain
+  - The transmitter is controlled by data_in_tx. This signal drives the transmission gate of the output buffer with dead time insertion
+- PCB design:
+  - analog-1 pin connects to the off chip accumulator: /plots/accumulator_network.png
+  - analog-0 pin is for the sender, it uses the network: /plots/output_network.png
+  - analog-2 pin is for the receiver, it uses the network: /plots/input_network.png
+  - capacitors under 0.5pF are ignored. use footprints 402, with dielectric NP0/C0G, X7R is ok but not lower. for 0.5pF caps, use RF caps.
+  - If the capacitors are too expensive, use place holder 0 ohm resistors for series elements, and open circuits for shunts.
+  - The trace should be 50 ohms. If you're using a 2-layer PCB, decrease the thickness to get a reasonable impedance with reasonable trace thickness.
+  (I had some good designs with 2-layer PCBs at 1mm thickness)
+  - both transmit and receive matching networks should end with your favorite 50 ohm SMA/BNC connector you find at your vendor of choice
+  - If my PCB requires too much, and you think it should be my responsibility, email: belalshinnawey@gmail.com and I will provide
+  whatever you need regarding this issue. :)
+
+
+### Voltage Controlled Resistor
+
+A fully analog component with ohmic behaviour whose resistance value can be changed in accordance with an external analog control voltage.
+
+<p align="center">
+  <a href="img/user_projects/heichips26_vcr.png">
+    <img src="img/user_projects/heichips26_vcr.png" alt="Render of heichips26_vcr" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_vcr`
+Slot size: `small`
+Analog pins: `3`
+Uses VAPRW: `True`
+
+**Team members:**
+
+- Clyde
+- Santiago
+- Mattes
+- Sebastian
+- Noah
+
+**Description:**
+
+We implement three different approaches to accomplish this task.
+* bisectional opamp
+* floating gate
+* switched capacitor
+Each implementation will be selectable via integrated analog switches. If we can get some physical switches on the PCB that are connected to the digital pins of the chip, this would be really cool. This way, we could select each of the three implementations without reprogramming the eFPGA.
+
+
+### daftASIC
+
+An extensively, named daftASIC, designed and expandable music synthesizer built purely in silicon, supporting both visual and audio outputs
+
+<p align="center">
+  <a href="img/user_projects/heichips26_daftASIC.png">
+    <img src="img/user_projects/heichips26_daftASIC.png" alt="Render of heichips26_daftASIC" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_daftASIC`
+Slot size: `small`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Alexander-Odysseus Farmakis
+- Karolina Piotrowska
+- Alisa Stiballe
+- Riccardo Tedeschi
+
+**Description:**
+
+A music synthesizer built purely in silicon, daftASIC supports both visual and audio outputs. The music synthesizer designed supports
+PS/2 keyboard inputs, VGA output for the score and a PWM driver for the audio output. It supports multiple note durations (full, half,
+quarter and eighth notes), as well as various effects (phaser, staccato). daftASIC can be extended to include an automatic melody input
+system for automatic reproduction of programmed melodies.
+
+Features include:
+  - PWM-based waveform generator for audio production and effects
+  - VGA-based score viewer with dynamic placement of incoming notes and the current active effect
+  - PS/2-based keyboard input for user interaction with the system
+  - Character ROMs for the visuals of the score
+
+No external analog circuitry is required beyond the standard board connections, however some filtering and amplification
+of the PWM signal could make the sounds produced more pleasant for some.
+
+
+### Ballmer-Peak-Detector
+
+Edge State Space Model Processing Element using Posit Arithmetic
+
+<p align="center">
+  <a href="img/user_projects/heichips26_ballmer_peak_detector.png">
+    <img src="img/user_projects/heichips26_ballmer_peak_detector.png" alt="Render of heichips26_ballmer_peak_detector" width=40%>
+  </a>
+</p>
+
+Top cell: `heichips26_ballmer_peak_detector`
+Slot size: `small`
+Analog pins: `0`
+Uses VAPRW: `False`
+
+**Team members:**
+
+- Fabian Seiler
+- Felix Blenk
+- Luke Vassallo
+- Simon Veser
+- Tassilo Tanneberger
+
+**Description:**
+
+A processing element that targets edge-specific SSM layers (S-Edge). 
+- The operations are based on complex MAC operations and a scheduling unit implemented with Posit Arithmetic.
+
+and [links](https://github.com/tanneberger/ballmer-peak-detector).
+
+
+
+<!--- project_list_end -->
+
+## Configuration of the FPGA Fabric
+
+The eFPGA fabric can be configured using the SPI peripheral or the SPI controller, depending on the value of `fpga_mode`.
+
+| fpga_mode | description |
+|---|---|
+| 0 | Active SPI mode. |
+| 1 | Passive SPI mode. |
+
+If active SPI mode is selected and fpga_rst_n is deasserted, the configuration logic will fetch the bitstream from slot 0 (address 0) of the external SPI flash. Using fpga_config_slot[3:0] and fpga_config_trigger (which is only possible when the configuration logic is not busy), it is possible to initiate reconfiguration from a different slot.
+The offset of the slots is 0x800 words (0x2000 bytes). The controller uses the first 0x5A6 words (0x1698 bytes) of a slot as the bitstream.
+
+If passive SPI mode is selected, the bitstream can be supplied via an external SPI controller.
+
+## Specification
+
+The I/O voltage (IOVDD) should be 3.3V.
+The core voltage (VDD) should be 1.2V.
+
+The top level, including the configuration logic, is setup and hold violation free at up to 55.5MHz for the following corners:
+
+- `nom_typ_1p20V_25C`
+- `nom_fast_1p32V_m40C`
+- `nom_slow_1p08V_125C`
+- `nom_typ_1p50V_25C`
+- `nom_fast_1p65V_m40C`
+- `nom_slow_1p35V_125C`
+
+Using a core voltage higher than 1.65V (while remaining within the safe operating area) may still work, but could lead to hold violations in the configuration logic. If that happens, you can try increasing the voltage *after* configuration of the FPGA is complete.
+
+## Pinout
+
+
+<p align="center">
+  <a href="img/heichips26_bonding_diagram.png">
+    <img src="img/heichips26_bonding_diagram.png" alt="bonding diagram" width=65%>
+  </a>
+</p>
+
+
+| Pin name                | Description                   |
+|-------------------------|-------------------------------|
+| fpga_clk                | The clock for the FPGA configuration logic. |
+| fpga_rst_n              | The reset for the FPGA configuration logic (active low). |
+| fpga_mode               | Set configuration mode. 0 = active, 1 = passive. |
+| fpga_config_busy        | High while the FPGA is under configuration. |
+| fpga_config_configured  | High after the FPGA has been configured. |
+| fpga_enable_pgs         | Global enable for all power gates (active high). |
+| fpga_sclk               | SPI: source clock.             |
+| fpga_cs_n               | SPI: chip select (active low). |
+| fpga_mosi               | SPI controller out, peripheral in. |
+| fpga_miso               | SPI: controller in, peripheral out. |
+| fpga_config_trigger     | If high, trigger a reconfiguration in active mode from one of 16 slots of the SPI flash. |
+| fpga_config_slot[3:0]   | Set selected slot for the FPGA configuration. |
+| analog[15:13]           | Analog pins of `heichips26_ook_top`. |
+| analog[12:10]           | Analog pins of `heichips26_vcr`. |
+| analog[9:7]             | Analog pins of `heichips26_multimode_dll`. |
+| analog[5:3]             | Analog pins of `heichips26_FAIf`. |
+| analog[2:0]             | Analog pins of `heichips26_sramcell_test`. |
+| analog[6]               | Unused. |
+| analog[16]              | Unused. |
+| fpga_io[31:0]           | I/O pins which can be controlled by the FPGA user project. |
+
+## Building User Designs for the eFPGA
+
+To build a bitstream of a user design for the eFPGA, see [README.md](ip/fabric/user_designs/README.md) under `ip/fabric/user_design`.
+
+## Building the Chip
+
+### Prerequisites
+
+> [!NOTE]
+> Either clone the repo using the following command: 
+>```console
+>git clone --recurse-submodules git@github.com:FPGA-Research/heichips25-tapeout.git
+>```
+> or initialize the submodules if you cloned the repo without them:
+>
+>```console
+> git submodule update --init --recursive .
+>```
+
+To clone the compatible PDK version, simply run `make clone-pdk`.
+
+For information on installing Nix with the FOSSi Foundation cache, please refer to the LibreLane documentation: https://librelane.readthedocs.io/en/stable/installation/nix_installation/index.html
+
+Afterwards you can enable a Nix shell by running `nix-shell`.
+
+## Stitch the Fabric
+
+As a prerequisite make sure that the tiles for the tile library that you are using have been implemented in `ip/fabulous-tiles`.
+If that is the case, you can proceed by enabling a Nix shell with LibreLane in this repository:
+
+```
+nix-shell
+```
+
+To implement the fabric, run:
+
+```
+make classic_fabric_heichips26
+```
+
+After the fabric has been implemented you can view it either in OpenROAD or KLayout by appending `-openroad` or `-klayout` to the fabric name.
+For example, to view `classic_fabric_heichips26` in OpenROAD, run: `make classic_fabric_heichips26-openroad`.
+
+After the fabric has been generated, run:
+
+```
+make classic_fabric_heichips26-copy
+```
+
+This copies the fabric database to `user_designs/`.
+
+### Build The Chip
+
+To build the chip with LibreLane:
+
+```console
+make librelane
+```
+
+To view the design in OpenROAD:
+
+```console
+make librelane-openroad
+```
+
+Or to view it in KLayout:
+
+```console
+make librelane-klayout
+```
+
+And with this the chip is ready for tapeout. 
+
+## Implement User Designs
+
+Please see the README in `user_designs/` on how to implement a user design for the fabrics.
+
+### Simulate the Fabric
+
+To run all fabric simulations, simply run one of:
+
+```
+make sim-fabric             # RTL sim of the fabric
+make sim-fabric-emulation   # RTL sim of the fabric, bitstream preloaded
+make sim-fabric-gl          # GL sim of the fabric (after implementation)
+```
+
+To view the waveform results:
+
+```
+make sim-fabric-view
+```
+
+### Simulate the Chip
+
+To run all chip top simulations, simply run one of:
+
+```
+make sim-top             # RTL sim of chip top
+make sim-top-emulation   # RTL sim of chip top, bitstream preloaded
+make sim-top-gl          # GL sim of chip top (after implementation)
+```
+
+To view the waveform results:
+
+```
+make sim-top-view
+```
+
+## License
+
+The chip is licensed under the Apache 2.0 license. This license may *not* apply to the remainder of the repository.
+
+## Acknowledgements
+
+This chip was designed by Leo Moser for the HeiChips Summer School 2026.
+
+The power gates for the user projects were designed by Daniel Arevalos Ortiz and are based on the TT power gates designed by Sylvain Munaut.
+
+Thanks to [Heidelberg University](https://www.uni-heidelberg.de/en), [BMFTR](https://www.bmftr.bund.de/) and [Chipdesign Germany](https://www.chipdesign-germany.de/en/) for their financial support, which enabled the tapeout of the chip.
